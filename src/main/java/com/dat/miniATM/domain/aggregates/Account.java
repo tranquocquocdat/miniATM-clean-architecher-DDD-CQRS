@@ -1,7 +1,9 @@
 package com.dat.miniATM.domain.aggregates;
 
 import java.util.UUID;
+import lombok.Data;
 
+@Data
 public class Account {
     private UUID id;
     private double balance;
@@ -9,14 +11,6 @@ public class Account {
     public Account(UUID id, double initialBalance) {
         this.id = id;
         this.balance = initialBalance;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public double getBalance() {
-        return balance;
     }
 
     public void withdraw(double amount) {

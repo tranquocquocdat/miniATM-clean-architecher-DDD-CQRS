@@ -1,4 +1,4 @@
-package com.dattq.miniatm;
+package com.dat.miniATM;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

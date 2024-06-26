@@ -8,8 +8,10 @@ import lombok.Data;
 @Data
 @Entity
 public class AccountEntity {
+        @Id
+        private UUID accountId;
+        private String accountHolderName;
+        private double balance;
 
-    @Id
-    private UUID id;
-    private double balance;
+        // Constructors, getters, and setters
 }

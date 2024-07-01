@@ -13,5 +13,4 @@ public class AccountEntity {
         private String accountHolderName;
         private double balance;
 
-        // Constructors, getters, and setters
 }

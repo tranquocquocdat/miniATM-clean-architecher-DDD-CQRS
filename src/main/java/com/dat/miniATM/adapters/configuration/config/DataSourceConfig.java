@@ -18,7 +18,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(entityManagerFactoryRef = "accountEmFactory", transactionManagerRef = "accountTransactionManager", basePackages = {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager", basePackages = {
         "com.dat.miniATM.adapters.out.persistence.repositories.EnityManager", "com.dat.miniATM.adapters.out.persistence.repositories.jpql.AccountRepository"})
 public class DataSourceConfig {
 
@@ -45,7 +45,7 @@ public class DataSourceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("com.example");
+        em.setPackagesToScan("com.dat.miniATM.adapters.out.persistence.entities");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

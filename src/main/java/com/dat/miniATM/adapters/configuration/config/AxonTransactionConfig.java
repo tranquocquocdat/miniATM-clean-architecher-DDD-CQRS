@@ -13,7 +13,7 @@ public class AxonTransactionConfig {
 
     @Bean
     @Primary
-    public TransactionManager axonTransactionManagerCustom(PlatformTransactionManager platformTransactionManager) {
-        return (TransactionManager) new SpringTransactionManager(platformTransactionManager);
+    public SpringTransactionManager axonTransactionManagerCustom(PlatformTransactionManager platformTransactionManager) {
+        return new SpringTransactionManager(platformTransactionManager);
     }
 }

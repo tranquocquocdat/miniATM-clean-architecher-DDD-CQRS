@@ -1,1 +1,13 @@
-{ "properties": [ ] }
+{
+  "properties": [
+    {
+      "name": "axon.autoconfig.enabled",
+      "type": "java.lang.String",
+      "description": "Description for axon.autoconfig.enabled."
+    },
+    {
+      "name": "axon.autoconfig.enabled",
+      "type": "java.lang.String",
+      "description": "Description for axon.autoconfig.enabled."
+    }
+  ] }

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 //@SpringBootApplication(exclude = AxonAutoConfiguration.class)
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.dat.miniATM.adapters.out.persistence.repositories.jpql")
+//@EnableJpaRepositories(basePackages = "com.dat.miniATM.adapters.out.persistence.repositories.jpql")
 public class MiniAtmApplication {
 
     public static void main(String[] args) {

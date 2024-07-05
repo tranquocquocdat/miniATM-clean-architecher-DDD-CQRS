@@ -8,7 +8,6 @@ public class MoneyWithdrawnEvent extends AccountEvent {
     private double amount;
 
     public MoneyWithdrawnEvent(UUID accountId, double amount) {
-        super(accountId);
         this.amount = amount;
     }
 

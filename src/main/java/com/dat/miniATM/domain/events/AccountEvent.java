@@ -7,11 +7,6 @@ public abstract class AccountEvent {
     private UUID accountId;
     private LocalDateTime timestamp;
 
-    public AccountEvent(UUID accountId) {
-        this.accountId = accountId;
-        this.timestamp = LocalDateTime.now();
-    }
-
     public UUID getAccountId() {
         return accountId;
     }

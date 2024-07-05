@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.Data;
+import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
@@ -25,8 +27,19 @@ public class AccountAggregate {
     private String accountHolderName;
     private double balance;
 
+    @CommandHandler
     public AccountAggregate(CreateAccountCommand command) {
-        AggregateLifecycle.apply(command);
+        command.setAccountId(UUID.randomUUID());
+        AggregateLifecycle.apply(new AccountCreatedEvent(command.getAccountId(), command.getAccountHolderName(), command.getInitialBalance()));
     }
+
+    @EventSourcingHandler
+    public void on(AccountCreatedEvent event) {
+        System.out.println("Handling AccountCreatedEvent: " + event.getAccountId());
+        this.accountId = event.getAccountId();
+        this.accountHolderName = event.getAccountHolderName();
+        this.balance = event.getInitialBalance();
+    }
+
 
 }

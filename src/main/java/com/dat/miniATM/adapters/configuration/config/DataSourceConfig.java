@@ -5,21 +5,25 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager", basePackages = {
-        "com.dat.miniATM.adapters.out.persistence.repositories.EnityManager", "com.dat.miniATM.adapters.out.persistence.repositories.jpql.AccountRepository"})
+@EnableJpaRepositories(entityManagerFactoryRef = "eventStoreEmFactory", transactionManagerRef = "transactionManager", basePackages = {
+        "com.dat.miniATM.adapters.out.persistence.repositories"})
 public class DataSourceConfig {
 
         @Primary
@@ -41,30 +45,28 @@ public class DataSourceConfig {
         return dataSource;
     }
 
+
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
-        em.setPackagesToScan("com.dat.miniATM.adapters.out.persistence.entities");
-
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(hibernateProperties());
-
-        return em;
-    }
-
-    private Properties hibernateProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "update");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-        return properties;
+    @Primary
+    public LocalContainerEntityManagerFactoryBean eventStoreEmFactory(
+            @Qualifier("eventStoreDataSource") DataSource dataSource, EntityManagerFactoryBuilder builder) {
+        return builder.dataSource(dataSource)
+                .packages("com.dat.miniATM.adapters.out.persistence.entities")
+                .persistenceUnit("eventStore").properties(jpaProperties()).build();
     }
 
     @Bean
-    public JpaTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory.getObject());
-        return transactionManager;
+    @Primary
+    public PlatformTransactionManager transactionManager(
+            @Qualifier("eventStoreEmFactory") LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+        return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory.getObject()));
+    }
+
+    private Map<String, Object> jpaProperties() {
+        Map<String, Object> jpaProperties = new HashMap<>();
+        jpaProperties.put("hibernate.show_sql", true);
+        jpaProperties.put("hibernate.format_sql", true);
+        jpaProperties.put("spring.jpa.hibernate.ddl-auto", "update");
+        return jpaProperties;
     }
 }

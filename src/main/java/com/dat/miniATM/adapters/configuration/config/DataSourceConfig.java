@@ -51,7 +51,7 @@ public class DataSourceConfig {
     public LocalContainerEntityManagerFactoryBean eventStoreEmFactory(
             @Qualifier("eventStoreDataSource") DataSource dataSource, EntityManagerFactoryBuilder builder) {
         return builder.dataSource(dataSource)
-                .packages("com.dat.miniATM.adapters.out.persistence.entities")
+                .packages("com.dat.miniATM.adapters.out.persistence.entities", "org.axonframework.eventsourcing.eventstore.jpa")
                 .persistenceUnit("eventStore").properties(jpaProperties()).build();
     }
 

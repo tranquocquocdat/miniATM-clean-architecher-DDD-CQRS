@@ -23,16 +23,22 @@ public class AxonConfig {
     public EventStorageEngine eventStorageEngine(Serializer serializer,
                                                  DataSource dataSource,
                                                  EntityManagerProvider entityManagerProvider,
-                                                 PlatformTransactionManager transactionManager) throws SQLException {
-        SpringTransactionManager axonTransactionManager = new SpringTransactionManager(transactionManager);
+                                                 SpringTransactionManager transactionManager) throws SQLException {
         return JpaEventStorageEngine.builder()
                 .snapshotSerializer(serializer)
                 .eventSerializer(serializer)
                 .dataSource(dataSource)
                 .entityManagerProvider(entityManagerProvider)
-                .transactionManager(axonTransactionManager)
+                .transactionManager(transactionManager)
                 .build();
     }
+
+    @Bean
+    public SpringTransactionManager springTransactionManager( PlatformTransactionManager transactionManager) {
+        return new SpringTransactionManager(transactionManager);
+    }
+
+
 
     @Bean
     public TokenStore tokenStore(EntityManagerProvider entityManagerProvider, Serializer serializer) {

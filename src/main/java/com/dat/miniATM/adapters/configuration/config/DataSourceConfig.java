@@ -1,6 +1,9 @@
 package com.dat.miniATM.adapters.configuration.config;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.commandhandling.gateway.DefaultCommandGateway;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -66,7 +69,8 @@ public class DataSourceConfig {
         Map<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put("hibernate.show_sql", true);
         jpaProperties.put("hibernate.format_sql", true);
-        jpaProperties.put("spring.jpa.hibernate.ddl-auto", "update");
+        jpaProperties.put("hibernate.hbm2ddl.auto", "update"); // Thay đổi thuộc tính này
+        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect"); // Thêm dòng này nếu chưa có
         return jpaProperties;
     }
 }

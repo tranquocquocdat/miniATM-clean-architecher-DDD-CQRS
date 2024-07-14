@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -18,19 +19,24 @@ import org.springframework.stereotype.Component;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
+@Aggregate(snapshotTriggerDefinition = "snapshotTriggerDefinition")
 @Data
-@Aggregate
-@Component
 public class AccountAggregate {
     @AggregateIdentifier
     private UUID accountId;
     private String accountHolderName;
     private double balance;
 
+
+    public AccountAggregate() {
+    }
+
+
     @CommandHandler
     public AccountAggregate(CreateAccountCommand command) {
         command.setAccountId(UUID.randomUUID());
         AggregateLifecycle.apply(new AccountCreatedEvent(command.getAccountId(), command.getAccountHolderName(), command.getInitialBalance()));
+        throw  new RuntimeException("deat letter queue insert");
     }
 
     @EventSourcingHandler

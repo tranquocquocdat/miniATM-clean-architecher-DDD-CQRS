@@ -13,7 +13,9 @@ public class AccountService {
     private final CommandGateway commandGateway;
 
     public void createAccount(CreateAccountCommand command) {
-        commandGateway.sendAndWait(command);
+        for (int i = 0; i < 100; i++) {
+            commandGateway.sendAndWait(command);
+        }
 
     }
 }

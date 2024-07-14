@@ -18,6 +18,7 @@ public class AccountCommandHandler {
     @EventHandler
     public void on(AccountCreatedEvent event) {
         AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setAccountId(event.getAccountId());
         accountEntity.setAccountHolderName(event.getAccountHolderName());
         accountRepository.save(accountEntity);
     }

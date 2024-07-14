@@ -22,18 +22,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(entityManagerFactoryRef = "eventStoreEmFactory", transactionManagerRef = "transactionManager", basePackages = {
         "com.dat.miniATM.adapters.out.persistence.repositories"})
 public class DataSourceConfig {
 
-        @Primary
+    @Primary
     @ConfigurationProperties("spring.datasource.event-store")
     @Order(1)
     @Bean
-        DataSourceProperties eventStoreProperties() {
+    DataSourceProperties eventStoreProperties() {
         return new DataSourceProperties();
     }
 
@@ -48,13 +47,15 @@ public class DataSourceConfig {
         return dataSource;
     }
 
-
     @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean eventStoreEmFactory(
             @Qualifier("eventStoreDataSource") DataSource dataSource, EntityManagerFactoryBuilder builder) {
         return builder.dataSource(dataSource)
-                .packages("com.dat.miniATM.adapters.out.persistence.entities", "org.axonframework.eventsourcing.eventstore.jpa")
+                .packages("com.dat.miniATM.adapters.out.persistence.entities",
+                        "org.axonframework.eventsourcing.eventstore.jpa",
+                        "org.axonframework.eventhandling.deadletter.jpa",
+                        "org.axonframework.eventhandling.tokenstore.jpa")
                 .persistenceUnit("eventStore").properties(jpaProperties()).build();
     }
 

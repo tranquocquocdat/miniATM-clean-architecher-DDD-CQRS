@@ -3,7 +3,10 @@ package com.dat.miniATM.adapters.configuration;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.axonframework.common.transaction.TransactionManager;
+import org.axonframework.config.Configurer;
 import org.axonframework.config.ConfigurerModule;
+import org.axonframework.config.DefaultConfigurer;
+import org.axonframework.eventhandling.tokenstore.TokenStore;
 import org.axonframework.eventsourcing.EventCountSnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.SnapshotTriggerDefinition;
 import org.axonframework.eventsourcing.Snapshotter;
@@ -12,6 +15,10 @@ import org.axonframework.extensions.mongo.DefaultMongoTemplate;
 import org.axonframework.extensions.mongo.MongoTemplate;
 import org.axonframework.extensions.mongo.eventhandling.deadletter.MongoSequencedDeadLetterQueue;
 import org.axonframework.extensions.mongo.eventsourcing.eventstore.MongoEventStorageEngine;
+import org.axonframework.extensions.mongo.eventsourcing.tokenstore.MongoTokenStore;
+import org.axonframework.extensions.mongo.springboot.AxonMongoProperties;
+import org.axonframework.serialization.Serializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,41 +38,36 @@ public class AxonMongoConfig {
                 .build();
     }
 
-    @Bean
-    public SpringMongoTemplate axonMongoTemplate() {
-        return DefaultMongoTemplate.builder()
-                .mongoDatabase(mongoClient(), "axon")
-                .build();
+    @Autowired
+    public void configure(Configurer configurer, MongoClient client) {
+        configurer.configureEmbeddedEventStore(configuration -> storageEngine(client))
+                .eventProcessing(conf -> conf.registerTokenStore(config -> tokenStore(client, config.serializer())));
     }
 
     @Bean
-    public EventStorageEngine eventStorageEngine(MongoTemplate axonMongoTemplate) {
+    public EventStorageEngine storageEngine(MongoClient client) {
         return MongoEventStorageEngine.builder()
-                .mongoTemplate(axonMongoTemplate)
+                .mongoTemplate(DefaultMongoTemplate.builder().mongoDatabase(client).build())
                 .build();
-    }
-    @Bean
-    public SnapshotTriggerDefinition buyerAggregateSnapshotTrigger(
-            Snapshotter snapshotter
-    ) {
-        return new EventCountSnapshotTriggerDefinition(snapshotter, 1);
     }
 
     @Bean
-    public ConfigurerModule deadLetterQueueConfigurerModule(
-            MongoTemplate mongoTemplate
-    ) {
-        // Replace "my-processing-group" for the processing group you want to configure the DLQ on.
-        return configurer -> configurer.eventProcessing().registerDeadLetterQueue(
-                "my-processing-group",
-                config -> MongoSequencedDeadLetterQueue.builder()
-                        .processingGroup("my-processing-group")
-                        .maxSequences(256)
-                        .maxSequenceSize(256)
-                        .mongoTemplate(mongoTemplate)
-                        .transactionManager(config.getComponent(TransactionManager.class))
-                        .serializer(config.serializer())
-                        .build()
-        );
+    public TokenStore tokenStore(MongoClient client, Serializer serializer) {
+        return MongoTokenStore.builder()
+                .mongoTemplate(DefaultMongoTemplate.builder().mongoDatabase(client).build())
+                .serializer(serializer)
+                .build();
     }
+
+    @Bean
+    public SnapshotTriggerDefinition mySnapshotTriggerDefinition(org.axonframework.config.Configuration configuration) {
+        return new EventCountSnapshotTriggerDefinition(configuration.snapshotter(), 5);
+    }
+
+    @Bean
+    public DefaultConfigurer configurer() {
+        return (DefaultConfigurer) DefaultConfigurer.defaultConfiguration();
+    }
+
+
 }

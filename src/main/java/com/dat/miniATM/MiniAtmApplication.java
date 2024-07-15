@@ -1,13 +1,14 @@
 package com.dat.miniATM;
 
 import org.axonframework.springboot.autoconfig.AxonAutoConfiguration;
+import org.axonframework.springboot.autoconfig.JdbcAutoConfiguration;
+import org.axonframework.springboot.autoconfig.JpaAutoConfiguration;
+import org.axonframework.springboot.autoconfig.JpaEventStoreAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-//@SpringBootApplication(exclude = AxonAutoConfiguration.class)
-@SpringBootApplication
-//@EnableJpaRepositories(basePackages = "com.dat.miniATM.adapters.out.persistence.repositories.jpql")
+
+@SpringBootApplication(scanBasePackages = "org.axonframework.extensions.mongo.springboot.autoconfig",exclude = {AxonAutoConfiguration.class, JpaAutoConfiguration.class, JdbcAutoConfiguration.class, JpaEventStoreAutoConfiguration.class} )
 public class MiniAtmApplication {
 
     public static void main(String[] args) {

@@ -52,8 +52,8 @@
         <!-- https://mvnrepository.com/artifact/org.axonframework.extensions.mongo/axon-mongo -->
         <dependency>
             <groupId>org.axonframework.extensions.mongo</groupId>
-            <artifactId>axon-mongo</artifactId>
-            <version>4.9.0</version>
+            <artifactId>axon-mongo-spring-boot-autoconfigure</artifactId>
+            <version>4.9.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>

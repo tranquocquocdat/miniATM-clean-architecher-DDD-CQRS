@@ -19,18 +19,23 @@ import org.springframework.stereotype.Component;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 @Data
-@Aggregate
-@Component
+@Aggregate(snapshotTriggerDefinition = "buyerAggregateSnapshotTrigger")
 public class AccountAggregate {
     @AggregateIdentifier
     private UUID accountId;
     private String accountHolderName;
     private double balance;
 
+
+    public AccountAggregate() {
+    }
+
+
     @CommandHandler
     public AccountAggregate(CreateAccountCommand command) {
         command.setAccountId(UUID.randomUUID());
         AggregateLifecycle.apply(new AccountCreatedEvent(command.getAccountId(), command.getAccountHolderName(), command.getInitialBalance()));
+//        throw  new RuntimeException("deat letter queue insert");
     }
 
     @EventSourcingHandler
